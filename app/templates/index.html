@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Service</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fc;
+            padding-top: 60px; /* Adjust for fixed navbar */
+            color: #333;
+            text-align: center;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            padding: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.4rem;
+            transition: 0.3s ease-in-out;
+        }
+
+        .navbar a:hover {
+            opacity: 0.8;
+        }
+
+        /* Container Styling */
+        .container {
+            max-width: 600px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1), -5px -5px 15px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease-in-out;
+            margin: auto;
+        }
+
+        /* Buttons */
+        button {
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 12px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), -3px -3px 6px rgba(255, 255, 255, 0.8);
+            border: none;
+            cursor: pointer;
+        }
+
+        .translate-button {
+            width: 100%;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .translate-button:hover {
+            background: linear-gradient(135deg, #0056b3, #003d82);
+            transform: scale(1.05);
+        }
+
+        /* Small, Centered Buttons */
+        .small-btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .small-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            min-width: 130px; /* Ensures consistency */
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #117a8b);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #117a8b, #0e6779);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #545b62);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #545b62, #3c4348);
+            transform: scale(1.05);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .progress {
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #e0e0e0;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+            max-width: 400px;
+            margin: auto;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #28a745, #218838);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Translation ID Section */
+        .translation-id-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        .translation-id-container input {
+            width: 100%;
+            max-width: 250px; /* Limits input field width */
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            transition: 0.3s ease-in-out;
+        }
+
+        .translation-id-container input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Result Containers */
+        #results,
+        #status-container,
+        #content-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1), -5px -5px 15px rgba(255, 255, 255, 0.8);
+            margin-top: 20px;
+            transition: transform 0.3s ease-in-out;
+            text-align: left;
+        }
+
+        #results:hover,
+        #status-container:hover,
+        #content-container:hover {
+            transform: scale(1.02);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            button {
+                width: auto;
+            }
+
+            .small-btn {
+                min-width: 100px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <a href="#" class="navbar-navbar">Translation service app....</a>
+    </nav>
+        <div class="container">
+            <h1 class="text-center mt-4">Translation Service</h1>
+            <form id="trnslationForm">
+                <label for="textToTranslate" >Text to translate:</label>
+                <textarea class="form-control" id="textToTranslate" rows="4" placeholder="Enter text here...."></textarea>
+                <div class="form-group">
+                    <label for="languages" >Languages (comma-separated)</label>
+                    <textarea type="text" class="form-control" id="languages"  placeholder="e,g..,en,fr,es"></textarea>
+                </div>
+                <button type="button" class="btn btn-primary translate-button" onclick="submitTranslation()">Translate</button>
+            </form>
+        </div>
+        <div class="mt-4" id="results" style="display: none;">
+            <h3>Translation Results</h3>
+            <pre id="translationResults"></pre>
+        </div>
+        <div class="mt-4" id="progress-container" style="display: none;">
+            <h4 id="progress-text">Translation in progress...</h4>
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+        </div>
+        
+        <div class="translation-id-container">
+            <label for="search-id">Check Translation by ID</label>
+            <input type="number" id="search-id" class="form-control" placeholder="Enter translation ID">
+            <div class="small-btn-container">
+                <button id="search-button" class="btn btn-info small-btn" onclick="checkTranslationStatus()">Check Status</button>
+                <button id="content-button" class="btn btn-secondary small-btn" onclick="checkTranslationContent()">Check Content</button>
+            </div>
+        </div>
+        
+            
+        </div>
+        <div class="mt-4" id="status-container" style="display: none;">
+            <h4>Translation Status</h4>
+            <pre id="statusResult"></pre>
+        </div>
+        <div class="mt-4" id="content-container" style="display: none;">
+            <h4>Translation Content</h4>
+            <pre id="contentResult"></pre>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <!-- Axios JS -->
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
+    
+    <!-- Bootstrap JS (Optional, for components that require JavaScript) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
+
+    <script>
+async function submitTranslation() {
+    const text = document.getElementById('textToTranslate')?.value;
+    const languages = document.getElementById('languages')?.value.split(',').map(lang => lang.trim());
+
+    if (!text || languages.length === 0 || languages[0] === "") {
+        alert('Please enter text and languages');
+        return;
+    }
+
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressContainer = document.getElementById('progress-container');
+    
+    if (!progressBar || !progressText) {
+        console.error("Error: Progress bar or progress text not found in the DOM.");
+        alert("An unexpected error occurred. Please refresh the page and try again.");
+        return;
+    }
+
+    // Reset progress bar
+    progressBar.classList.remove('bg-success');
+    progressBar.classList.add('bg-primary');
+    progressBar.style.width = '0%';
+    progressText.textContent = 'Translation in progress...';
+    progressContainer.style.display = 'block';
+
+    try {
+        // Step 1: Submit the translation task
+        const response = await axios.post('http://127.0.0.1:8000/translate', {
+            text: text,
+            languages: languages
+        });
+        
+        const taskId = response.data.task_id;
+        alert(`Task ID: ${taskId}`);
+        
+        // Hide other containers
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('status-container').style.display = 'none';
+        document.getElementById('content-container').style.display = 'none';
+
+        // Step 2: Poll for task completion with exponential backoff
+        let attempts = 0;
+        const maxAttempts = 10; // Maximum number of polling attempts
+        const initialDelay = 1000; // Initial delay of 1 second
+        const maxDelay = 10000; // Maximum delay of 10 seconds
+
+        const pollTaskStatus = async (taskId, delay) => {
+            if (attempts >= maxAttempts) {
+                alert('Translation task timed out. Please check the task status later.');
+                return;
+            }
+
+            try {
+                const resultResponse = await axios.get(`http://127.0.0.1:8000/translate/${taskId}`);
+                const translationResult = resultResponse.data;
+
+                if (translationResult.status === 'COMPLETED') {
+                    // Task completed successfully
+                    progressBar.classList.remove('bg-primary');
+                    progressBar.classList.add('bg-success');
+                    progressBar.style.width = '100%';
+                    progressText.textContent = 'Translation Completed';
+                    document.getElementById('translationResults').textContent = JSON.stringify(translationResult, null, 2);
+                    document.getElementById('results').style.display = 'block';
+                } else {
+                    // Task still in progress, poll again with increased delay
+                    attempts++;
+                    const nextDelay = Math.min(delay * 2, maxDelay); // Exponential backoff
+                    setTimeout(() => pollTaskStatus(taskId, nextDelay), nextDelay);
+                }
+            } catch (error) {
+                console.error('Error polling task status:', error);
+                alert('An error occurred while checking the translation status. Please try again.');
+            }
+        };
+
+        // Start polling
+        pollTaskStatus(taskId, initialDelay);
+
+    } catch (error) {
+        alert('An error occurred during translation, please try again');
+        console.error(error);
+    }
+}
+
+async function checkTranslationStatus() {
+    const translationId = document.getElementById('search-id')?.value;
+    if (!translationId) {
+        alert('Please enter a translation ID');
+        return;
+    }
+    
+    try {
+        // Fetch status from the correct endpoint
+        const response = await axios.get(`http://127.0.0.1:8000/translate/${translationId}`);
+        
+        // Display the status
+        document.getElementById('statusResult').textContent = JSON.stringify(response.data, null, 2);
+        document.getElementById('status-container').style.display = 'block';
+    } catch (error) {
+        alert('Error fetching translation status');
+        console.error(error);
+    }
+}
+
+async function checkTranslationContent() {
+    const translationId = document.getElementById('search-id')?.value;
+    if (!translationId) {
+        alert('Please enter a translation ID');
+        return;
+    }
+    
+    try {
+        const response = await axios.get(`http://127.0.0.1:8000/translate/content/${translationId}`);
+        document.getElementById('contentResult').textContent = JSON.stringify(response.data, null, 2);
+        document.getElementById('content-container').style.display = 'block';
+    } catch (error) {
+        alert('Error fetching translation content');
+        console.error(error);
+    }
+}
+
+
+
+    </script>
+</body>
+</html>
